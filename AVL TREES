@@ -1,0 +1,221 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package binary.search.trees;
+import java.util.*;
+/**
+ *
+ * @author tony.tian
+ */
+public class AVL {
+    
+    private Node root;
+    private ArrayList<Comparable> input;
+    
+    public AVL()
+    {
+        root = null;
+        input = new ArrayList();
+    }
+    
+    public int getHeight(Node n)//height of a node
+    {
+        if(n == null)
+        {
+            return -1;
+        }
+        else
+        {
+            return n.getHeight();
+        }
+    }
+    
+    public int findMax(int a, int b)//between two numbers
+    {
+        if(a > b)
+        {
+            return a;
+        }
+        return b;
+    }
+    
+    public void insert(Comparable c)
+    {
+        root = insertHelper(c, root);
+    }
+    
+    public Node insertHelper(Comparable c, Node n)
+    {
+        if(n == null)
+        {
+            n = new Node(c);
+        }
+        else if(c.compareTo(n.getData()) < 0)
+        {
+            n.setLeft(insertHelper(c, n.getLeft()));
+            if(getHeight(n.getLeft()) - getHeight(n.getRight()) == 2)
+            {
+                if(c.compareTo(n.getLeft().getData()) < 0)
+                {
+                    n = singleRotateLeft(n);
+                }
+                else
+                {
+                    n = doubleRotateLeft(n);
+                }
+            }
+        }
+        else
+        {
+            n.setRight(insertHelper(c, n.getRight()));
+            if(getHeight(n.getRight()) - getHeight(n.getLeft()) == 2)
+            {
+                if(c.compareTo(n.getRight().getData()) >= 0)
+                {
+                    n = singleRotateRight(n);
+                }
+                else
+                {
+                    n = doubleRotateRight(n);
+                }
+            }
+        }
+        n.setHeight(findMax(getHeight(n.getLeft()), getHeight(n.getRight())) + 1);
+        return n;
+    }
+    
+    public Node singleRotateLeft(Node n)//makes a new root node after rotating
+    {
+        Node temp = n.getLeft();
+        
+        n.setLeft(temp.getRight());
+        temp.setRight(n);
+        
+        n.setHeight(findMax(getHeight(n.getLeft()), getHeight(n.getRight())) + 1);
+        temp.setHeight(findMax(getHeight(temp.getLeft()), n.getHeight()) + 1);
+        
+        return temp;
+    }
+    
+    public Node singleRotateRight(Node n)
+    {
+        Node temp = n.getRight();
+        
+        n.setRight(temp.getLeft());
+        temp.setLeft(n);
+        
+        n.setHeight(findMax(getHeight(n.getLeft()), getHeight(n.getRight())) + 1);
+        temp.setHeight(findMax(getHeight(temp.getRight()), n.getHeight()) + 1);
+        
+        return temp;
+    }
+    
+    public Node doubleRotateLeft(Node n)
+    {
+        n.setLeft(singleRotateRight(n.getLeft()));
+        return singleRotateLeft(n);
+    }
+    
+    public Node doubleRotateRight(Node n)
+    {
+        n.setRight(singleRotateLeft(n.getRight()));
+        return singleRotateRight(n);
+    }
+    
+    public void remove(Comparable c)
+    {
+        
+    }
+    
+    public void makeHeightTable()//makes a height table for all nodes in the tree//too slow
+    {
+        
+    }
+    
+    public void printTree()//viewing only
+    {
+        printTreeHelper(root);
+    }
+    
+    public void printTreeHelper(Node n)//testing
+    {
+        printTreeHelper2(n);
+        //System.out.println("LEFT START: ");
+        if(n.getLeft() != null)
+        {
+            printTreeHelper(n.getLeft());
+        }
+        //System.out.println("LEFT END.");
+        //System.out.println("RIGHT START: ");
+        if(n.getRight() != null)
+        {
+            printTreeHelper(n.getRight());
+        }    
+        //System.out.println("RIGHT END.");
+    }
+    
+    public void printTreeHelper2(Node n)//testing helper
+    {
+        System.out.print("Parent: " + n.getData() + " ");
+        if(n.getLeft() != null)
+        {
+            System.out.print("Left: " + n.getLeft().getData() + " ");
+        }
+        if(n.getRight() != null)
+        {
+            System.out.print("Right: " + n.getRight().getData() + " ");
+        }
+        System.out.println();
+    }
+    
+    private class Node
+    {
+        private Node left;
+        private Node right;
+        private Comparable data;
+        private int height;
+        
+        private Node(Comparable c)
+        {
+            data = c;
+            left = null;
+            right = null;
+        }
+        
+        private Node getLeft()
+        {
+            return left;
+        }
+        
+        private Node getRight()
+        {
+            return right;
+        }
+        
+        private void setLeft(Node n)
+        {
+            left = n;
+        }
+        
+        private void setRight(Node n)
+        {
+            right = n;
+        }
+        
+        private Comparable getData()
+        {
+            return data;
+        }
+        
+        private void setHeight(int i)
+        {
+            height = i;
+        }
+        
+        private int getHeight()
+        {
+            return height;
+        }
+    }
+}
